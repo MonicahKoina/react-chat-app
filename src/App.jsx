@@ -1,5 +1,10 @@
+import { DatePicker } from "antd";
 function App() {
-  return <></>;
+  return (
+    <>
+      <DatePicker />
+    </>
+  );
 }
 
 export default App;
