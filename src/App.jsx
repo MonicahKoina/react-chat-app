@@ -1,8 +1,9 @@
-import { DatePicker } from "antd";
+import AppRoutes from "./routes/AppRoutes";
+
 function App() {
   return (
     <>
-      <DatePicker />
+      <AppRoutes />
     </>
   );
 }
