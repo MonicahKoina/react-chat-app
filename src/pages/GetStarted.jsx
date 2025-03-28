@@ -1,8 +1,10 @@
 import React from "react";
 import pic from "../assets/getstarted.gif";
 import { Button } from "antd";
+import { useNavigate } from "react-router-dom";
 
 function GetStarted() {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <figure className="flex items-center justify-center">
@@ -23,6 +25,7 @@ function GetStarted() {
         <Button
           type="primary"
           className="bg-blue-500 text-white px-6 py-2 rounded-md"
+          onClick={() => navigate("/register")}
         >
           Get Started
         </Button>
