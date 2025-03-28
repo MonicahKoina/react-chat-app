@@ -13,15 +13,15 @@ const Splash = () => {
 
     const timer = setTimeout(() => {
       setShowSplash(false);
-      navigate("/");
-    }, 2000);
+      navigate("/getstarted");
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
 
   return (
     showSplash && (
-      <div className="flex items-center justify-center h-screen bg-white">
+      <div className="flex items-center justify-center h-screen bg-gray-100">
         <img ref={logoRef} src={logo} alt="Qonvoo Logo" className="w-32 h-32" />
       </div>
     )
