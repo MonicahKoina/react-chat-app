@@ -1,150 +1,94 @@
-import { Button } from "antd";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import sign from "../assets/signup.jpg";
+import { Button, Input } from "antd";
+import {
+  EyeOutlined,
+  EyeInvisibleOutlined,
+  GoogleOutlined,
+} from "@ant-design/icons";
 
 function Register() {
-  const navigate = useNavigate();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [agreed, setAgreed] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-    navigate("/signin");
-  };
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full ">
-      <div className="hidden md:block md:w-1/2 h-full">
-        <img src={sign} alt="signup" className="h-full w-full object-cover" />
-      </div>
-      <div className="flex items-center justify-center w-full md:w-1/2 px-6">
-        <form onSubmit={handleSubmit} className="w-full max-w-md">
-          <h2 className="text-3xl font-bold text-center text-gray-700 mb-8">
-            Create an Account
-          </h2>
+    <div className="flex justify-center items-center min-h-screen p-4">
+      <form className="w-full max-w-sm bg-white p-6 shadow-md rounded-lg">
+        <div className="flex flex-col space-y-4">
+          <label htmlFor="email">Email</label>
+          <Input
+            type="email"
+            id="email"
+            placeholder="name@email.com"
+            className="border border-gray-300 p-2 rounded-md"
+          />
 
-          <div className="grid gap-6 mb-6 md:grid-cols-2">
-            <div>
-              <label className="block text-sm font-medium text-gray-900">
-                First Name
-              </label>
-              <input
-                type="text"
-                className="border-1 p-1 rounded-sm"
-                placeholder="first Name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900">
-                Last Name
-              </label>
-              <input
-                type="text"
-                className="border-1 p-1 rounded-sm"
-                placeholder="last name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-              />
-            </div>
+          <label htmlFor="password">Password</label>
+          <div className="relative">
+            <Input
+              type={passwordVisible ? "text" : "password"}
+              id="password"
+              placeholder="Enter password"
+              className="border border-gray-300 p-2 pr-10 rounded-md w-full"
+            />
+            <span
+              className="absolute right-3 top-2 cursor-pointer text-gray-500"
+              onClick={() => setPasswordVisible(!passwordVisible)}
+            >
+              {passwordVisible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+            </span>
           </div>
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900">
-              Email Address
-            </label>
-            <input
-              type="email"
-              className="border-1 p-1 rounded-sm w-full"
-              placeholder="name@gmail.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+          <label htmlFor="confirmPassword">Confirm Password</label>
+          <div className="relative">
+            <Input
+              type={confirmPasswordVisible ? "text" : "password"}
+              id="confirmPassword"
+              placeholder="Confirm password"
+              className="border border-gray-300 p-2 pr-10 rounded-md w-full"
             />
+            <span
+              className="absolute right-3 top-2 cursor-pointer text-gray-500"
+              onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+            >
+              {confirmPasswordVisible ? (
+                <EyeInvisibleOutlined />
+              ) : (
+                <EyeOutlined />
+              )}
+            </span>
           </div>
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900">
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              className="border-1 p-1 rounded-sm w-full"
-              placeholder="123-45-678"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-            />
-          </div>
+          <Button type="primary" block>
+            Sign Up
+          </Button>
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900">
-              Password
-            </label>
-            <input
-              type="password"
-              className="border-1 p-1 rounded-sm w-full"
-              placeholder="•••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          <p className="text-center mt-2 text-sm">
+            Already have an account?{" "}
+            <a href="#" className="text-blue-500">
+              Sign In
+            </a>
+          </p>
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              className="border-1 p-1 rounded-sm w-full"
-              placeholder="•••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="flex items-start mb-6">
-            <input
-              type="checkbox"
-              checked={agreed}
-              onChange={() => setAgreed(!agreed)}
-              className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300"
-              required
-            />
-            <label className="ml-2 text-sm text-gray-900">
-              I agree with the
-              <a href="#" className="text-blue-600 hover:underline">
-                {" "}
-                terms and conditions
-              </a>
-              .
-            </label>
+          <div className="flex items-center my-4">
+            <hr className="flex-grow border-gray-300" />
+            <p className="mx-3 text-sm text-gray-500">OR CONTINUE WITH</p>
+            <hr className="flex-grow border-gray-300" />
           </div>
 
           <Button
-            type="primary"
-            htmlType="submit"
-            className="bg-blue-500 hover:bg-blue-600 text-white w-full py-2 rounded-md font-medium"
+            block
+            icon={<GoogleOutlined />}
+            className="flex items-center justify-center border border-gray-300"
           >
-            Sign Up
+            Google
           </Button>
-        </form>
-      </div>
+        </div>
+        <div className="mt-4">
+          <p>
+            By continuing, you agree to our Terms of Service and Privacy Policy.
+          </p>
+        </div>
+      </form>
     </div>
   );
 }
