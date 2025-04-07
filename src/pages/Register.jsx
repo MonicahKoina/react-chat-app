@@ -1,36 +1,55 @@
 import React, { useState } from "react";
-import { Button, Input } from "antd";
+import { Button, Input, Alert, Spin } from "antd";
 import {
   EyeOutlined,
   EyeInvisibleOutlined,
   GoogleOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
+  const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false); // Loading state
+  const [errorMessage, setErrorMessage] = useState(""); // Error message
+  const [successMessage, setSuccessMessage] = useState(""); // Success message
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!email || !password || !confirmPassword) {
-      alert("All fields are required");
-      return;
-    } else if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    } else {
-      alert("Account created successfully, redirecting you to sign in");
-      return;
-    }
+    setLoading(true); // Start loading
+
+    // Simulate a delay for API call
+    setTimeout(() => {
+      if (!email || !password || !confirmPassword) {
+        setLoading(false);
+        setErrorMessage("All fields are required");
+        return;
+      } else if (!/\S+@\S+\.\S+/.test(email)) {
+        setLoading(false);
+        setErrorMessage("Please enter a valid email");
+        return;
+      } else if (password !== confirmPassword) {
+        setLoading(false);
+        setErrorMessage("Passwords do not match");
+        return;
+      } else {
+        setLoading(false);
+        setSuccessMessage("Account created successfully! Redirecting...");
+        setTimeout(() => {
+          navigate("/login"); // Redirect to login after success
+        }, 1500);
+      }
+    }, 1500); // Simulate an API request delay
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen p-4">
       <form
-        className="w-full max-w-sm bg-white p-6 shadow-md rounded-lg "
+        className="w-full max-w-sm bg-white p-6 shadow-md rounded-lg"
         onSubmit={handleSubmit}
       >
         <div className="flex flex-col space-y-4">
@@ -84,10 +103,33 @@ function Register() {
             </span>
           </div>
 
-          {/* Fixed Submit Button */}
-          <Button type="primary" block htmlType="submit">
-            Sign Up
-          </Button>
+          {/* Show Alert based on success or error */}
+          {errorMessage && (
+            <Alert
+              message={errorMessage}
+              type="error"
+              showIcon
+              className="mb-4"
+            />
+          )}
+
+          {successMessage && (
+            <Alert
+              message={successMessage}
+              type="success"
+              showIcon
+              className="mb-4"
+            />
+          )}
+
+          {/* Loading spinner */}
+          {loading ? (
+            <Spin size="large" className="flex justify-center mt-4" />
+          ) : (
+            <Button type="primary" block htmlType="submit">
+              Sign Up
+            </Button>
+          )}
 
           <p className="text-center mt-2 text-sm">
             Already have an account?{" "}
@@ -110,6 +152,7 @@ function Register() {
             Google
           </Button>
         </div>
+
         <div className="mt-4">
           <p>
             By continuing, you agree to our Terms of Service and Privacy Policy.
