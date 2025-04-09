@@ -1,11 +1,31 @@
 import React, { useState } from "react";
-import { Button, Input, Alert, Spin } from "antd";
+import { Button, Input, Alert, Spin, message } from "antd";
 import {
   EyeOutlined,
   EyeInvisibleOutlined,
   GoogleOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+
+// Import Firebase modules
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+
+// Firebase config (ensure this is your actual Firebase config)
+const firebaseConfig = {
+  apiKey: "AIzaSyCvpfo2kUoQou5wcxTQZQXxJtp0IiduAvA",
+  authDomain: "qonvoo-8ca15.firebaseapp.com",
+  projectId: "qonvoo-8ca15",
+  storageBucket: "qonvoo-8ca15.appspot.com",
+  messagingSenderId: "544073045947",
+  appId: "1:544073045947:web:c44be025e15b6add26169e",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase Auth
+const auth = getAuth(app);
 
 function Register() {
   const navigate = useNavigate();
@@ -18,32 +38,49 @@ function Register() {
   const [errorMessage, setErrorMessage] = useState(""); // Error message
   const [successMessage, setSuccessMessage] = useState(""); // Success message
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading
+    setLoading(true);
 
-    // Simulate a delay for API call
-    setTimeout(() => {
-      if (!email || !password || !confirmPassword) {
-        setLoading(false);
-        setErrorMessage("All fields are required");
-        return;
-      } else if (!/\S+@\S+\.\S+/.test(email)) {
-        setLoading(false);
-        setErrorMessage("Please enter a valid email");
-        return;
-      } else if (password !== confirmPassword) {
-        setLoading(false);
-        setErrorMessage("Passwords do not match");
-        return;
-      } else {
-        setLoading(false);
-        setSuccessMessage("Account created successfully! Redirecting...");
-        setTimeout(() => {
-          navigate("/login"); // Redirect to login after success
-        }, 1500);
-      }
-    }, 1500); // Simulate an API request delay
+    if (!email || !password || !confirmPassword) {
+      setLoading(false); // Stop loading
+      setErrorMessage("All fields are required");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setLoading(false); // Stop loading
+      setErrorMessage("Passwords do not match");
+      return;
+    }
+
+    try {
+      // Create a new user with Firebase
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("User registered:", userCredential.user);
+
+      message.success(
+        "Account created successfully! Redirecting to sign-in..."
+      );
+      setLoading(false);
+
+      // Reset form
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000); // 2 seconds delay to show success message
+    } catch (error) {
+      console.error("Firebase error:", error.message);
+      setLoading(false);
+      setErrorMessage(error.message);
+    }
   };
 
   return (
@@ -133,7 +170,7 @@ function Register() {
 
           <p className="text-center mt-2 text-sm">
             Already have an account?{" "}
-            <a href="#" className="text-blue-500">
+            <a href="/login" className="text-blue-500">
               Sign In
             </a>
           </p>
