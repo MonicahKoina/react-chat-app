@@ -74,7 +74,7 @@ function Register() {
       setConfirmPassword("");
 
       setTimeout(() => {
-        navigate("/login");
+        navigate("/signin");
       }, 2000); // 2 seconds delay to show success message
     } catch (error) {
       console.error("Firebase error:", error.message);
@@ -170,7 +170,7 @@ function Register() {
 
           <p className="text-center mt-2 text-sm">
             Already have an account?{" "}
-            <a href="/login" className="text-blue-500">
+            <a href="/signin" className="text-blue-500">
               Sign In
             </a>
           </p>
