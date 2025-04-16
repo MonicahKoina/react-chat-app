@@ -1,11 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { GoogleCircleFilled, TikTokFilled } from "@ant-design/icons";
 import { Button, Input } from "antd";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 function SignIn() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredentials) => {
+        console.log("Logged in", userCredentials.user);
+        setError("");
+      })
+      .catch((err) => {
+        console.error("logIn error", err.message);
+        setError(err.message);
+      });
+  }
   return (
     <div className="w-full h-screen flex items-center justify-center bg-gray-50">
-      <form className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8"
+      >
         <h2 className="text-2xl font-semibold text-center mb-6">
           Welcome Back
         </h2>
@@ -14,12 +35,23 @@ function SignIn() {
           <label className="text-sm font-medium" htmlFor="email">
             Email
           </label>
-          <Input size="large" type="email" placeholder="you@example.com" />
+          <Input
+            size="large"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
           <label className="text-sm font-medium" htmlFor="password">
             Password
           </label>
-          <Input.Password size="large" placeholder="Enter your password" />
+          <Input.Password
+            size="large"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
 
         <div className="text-right mt-2">

@@ -1,172 +1,88 @@
 import React, { useState } from "react";
-import { Button, Input, Alert, Spin, message } from "antd";
+import { Button, Input, Alert, Spin } from "antd";
+import { GoogleOutlined } from "@ant-design/icons";
 import {
-  EyeOutlined,
-  EyeInvisibleOutlined,
-  GoogleOutlined,
-} from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-
-// Import Firebase modules
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { initializeApp } from "firebase/app";
-
-// Firebase config (ensure this is your actual Firebase config)
-const firebaseConfig = {
-  apiKey: "AIzaSyCvpfo2kUoQou5wcxTQZQXxJtp0IiduAvA",
-  authDomain: "qonvoo-8ca15.firebaseapp.com",
-  projectId: "qonvoo-8ca15",
-  storageBucket: "qonvoo-8ca15.appspot.com",
-  messagingSenderId: "544073045947",
-  appId: "1:544073045947:web:c44be025e15b6add26169e",
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase Auth
-const auth = getAuth(app);
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
+import { auth } from "../utils/firebase";
 
 function Register() {
-  const navigate = useNavigate();
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false); // Loading state
-  const [errorMessage, setErrorMessage] = useState(""); // Error message
-  const [successMessage, setSuccessMessage] = useState(""); // Success message
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setError("");
     setLoading(true);
 
-    if (!email || !password || !confirmPassword) {
-      setLoading(false); // Stop loading
-      setErrorMessage("All fields are required");
-      return;
-    }
-
     if (password !== confirmPassword) {
-      setLoading(false); // Stop loading
-      setErrorMessage("Passwords do not match");
+      setError("Passwords do not match");
+      setLoading(false);
       return;
     }
-
     try {
-      // Create a new user with Firebase
-      const userCredential = await createUserWithEmailAndPassword(
+      const userCredentials = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
-      console.log("User registered:", userCredential.user);
-
-      message.success(
-        "Account created successfully! Redirecting to sign-in..."
-      );
+      console.log("User credentials", userCredentials.user);
+    } catch (err) {
+      console.log("Registration error", err);
+      setError(err.message);
+    } finally {
       setLoading(false);
-
-      // Reset form
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
-
-      setTimeout(() => {
-        navigate("/signin");
-      }, 2000); // 2 seconds delay to show success message
-    } catch (error) {
-      console.error("Firebase error:", error.message);
-      setLoading(false);
-      setErrorMessage(error.message);
     }
   };
-
   return (
     <div className="flex justify-center items-center min-h-screen p-4">
       <form
-        className="w-full max-w-sm bg-white p-6 shadow-md rounded-lg"
         onSubmit={handleSubmit}
+        className="w-full max-w-sm bg-white p-6 shadow-2xl rounded-lg"
       >
-        <div className="flex flex-col space-y-4">
+        <div className="text-center">
+          <h1 className="font-bold">CREATE ACCOUNT</h1>
+        </div>
+        <div className="flex flex-col space-y-2">
           <label htmlFor="email">Email</label>
           <Input
             type="email"
             id="email"
             placeholder="name@email.com"
+            className="border border-gray-300 p-2 rounded-md"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-300 p-2 rounded-md"
           />
 
           <label htmlFor="password">Password</label>
-          <div className="relative">
-            <Input
-              type={passwordVisible ? "text" : "password"}
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
-              className="border border-gray-300 p-2 pr-10 rounded-md w-full"
-            />
-            <span
-              className="absolute right-3 top-2 cursor-pointer text-gray-500"
-              onClick={() => setPasswordVisible(!passwordVisible)}
-            >
-              {passwordVisible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-            </span>
-          </div>
-
+          <Input
+            type="password"
+            id="password"
+            placeholder="Enter password"
+            className="border border-gray-300 p-2 rounded-md"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
           <label htmlFor="confirmPassword">Confirm Password</label>
-          <div className="relative">
-            <Input
-              type={confirmPasswordVisible ? "text" : "password"}
-              id="confirmPassword"
-              placeholder="Confirm password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="border border-gray-300 p-2 pr-10 rounded-md w-full"
-            />
-            <span
-              className="absolute right-3 top-2 cursor-pointer text-gray-500"
-              onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
-            >
-              {confirmPasswordVisible ? (
-                <EyeInvisibleOutlined />
-              ) : (
-                <EyeOutlined />
-              )}
-            </span>
-          </div>
-
-          {/* Show Alert based on success or error */}
-          {errorMessage && (
-            <Alert
-              message={errorMessage}
-              type="error"
-              showIcon
-              className="mb-4"
-            />
-          )}
-
-          {successMessage && (
-            <Alert
-              message={successMessage}
-              type="success"
-              showIcon
-              className="mb-4"
-            />
-          )}
-
-          {/* Loading spinner */}
-          {loading ? (
-            <Spin size="large" className="flex justify-center mt-4" />
-          ) : (
-            <Button type="primary" block htmlType="submit">
-              Sign Up
+          <Input
+            type="password"
+            id="confirmPassword"
+            placeholder="Confirm password"
+            className="border border-gray-300 p-2 rounded-md"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          <div className="mt-4">
+            <Button type="primary" block htmlType="submit" disabled={loading}>
+              {loading ? "Creating account..." : "Sign Up"}
             </Button>
-          )}
+          </div>
 
           <p className="text-center mt-2 text-sm">
             Already have an account?{" "}
@@ -174,7 +90,6 @@ function Register() {
               Sign In
             </a>
           </p>
-
           <div className="flex items-center my-4">
             <hr className="flex-grow border-gray-300" />
             <p className="mx-3 text-sm text-gray-500">OR CONTINUE WITH</p>
@@ -189,7 +104,6 @@ function Register() {
             Google
           </Button>
         </div>
-
         <div className="mt-4">
           <p>
             By continuing, you agree to our Terms of Service and Privacy Policy.
