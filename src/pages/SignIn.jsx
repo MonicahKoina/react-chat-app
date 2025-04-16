@@ -1,26 +1,39 @@
 import React, { useState } from "react";
 import { GoogleCircleFilled, TikTokFilled } from "@ant-design/icons";
-import { Button, Input } from "antd";
+import { Button, Input, message } from "antd";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../utils/firebase";
+import { useNavigate } from "react-router-dom";
 
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const api = message;
 
   function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredentials) => {
         console.log("Logged in", userCredentials.user);
-        setError("");
+        api.success("Logged in successfully! Redirecting...");
+        setLoading(false);
+        navigate("/getstarted");
       })
       .catch((err) => {
-        console.error("logIn error", err.message);
+        console.error("LogIn error", err.message);
+        setLoading(false);
         setError(err.message);
+        api.error(`Error: ${err.message}`);
       });
   }
+
   return (
     <div className="w-full h-screen flex items-center justify-center bg-gray-50">
       <form
@@ -67,8 +80,10 @@ function SignIn() {
           type="primary"
           size="large"
           className="w-full mt-6 rounded-full"
+          htmlType="submit"
+          disabled={loading}
         >
-          Sign In
+          {loading ? "Signing In..." : "Sign In"}{" "}
         </Button>
 
         <div className="relative my-6">
@@ -82,6 +97,8 @@ function SignIn() {
           <GoogleCircleFilled className="hover:text-blue-500 cursor-pointer" />
           <TikTokFilled className="hover:text-black cursor-pointer" />
         </div>
+
+        {error && <div className="text-center text-red-500 mt-4">{error}</div>}
       </form>
     </div>
   );
